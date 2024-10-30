@@ -1,4 +1,4 @@
-name: Github Actions 실행시켜보기
+name: Deploy To S3 And Invalidate cloudFront
 
 on:
   push:
@@ -6,20 +6,27 @@ on:
       - main
 
 jobs:
-  My-Deploy-Job:
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: 명령어 하나만 실행하기
-        run: echo "Hello World!"
+      - name: Github Repository 파일 불러오기
+        uses: actions/checkout@v4
 
-      - name: 명령어 여러개 실행하기
-        run: |
-          echo "Hello, GitHub Actions!"
-          echo "This is a test deployment."
-          echo "This is a new feature."
+      - name: 의존성 설치
+        run: npm i
 
-      - name: Github Actions Secret 변수 사용하기
+      - name: 빌드
+        run: npm run build
+
+      - name: AWS Resource에 접근할 수 있게 AWS 인증 설정
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ap-northeast-2
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: S3 기존파일 전체 삭제
         run: |
-          echo ${{ secrets.MY_NAME}}
-          echo ${{ secrets.MY_HOBBY}}
+          aws s3 rm --recursive s3://day3-aws
+        env:
+          AWS_REGION: ap-northeast-2
