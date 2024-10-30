@@ -1,0 +1,25 @@
+name: Github Actions 실행시켜보기
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  My-Deploy-Job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 명령어 하나만 실행하기
+        run: echo "Hello World!"
+
+      - name: 명령어 여러개 실행하기
+        run: |
+          echo "Hello, GitHub Actions!"
+          echo "This is a test deployment."
+          echo "This is a new feature."
+
+      - name: Github Actions Secret 변수 사용하기
+        run: |
+          echo ${{ secrets.MY_NAME}}
+          echo ${{ secrets.MY_HOBBY}}
